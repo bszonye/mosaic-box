@@ -68,7 +68,7 @@ module card_tray_leaders(size=Vtray_leaders, cut=Dcut, color=undef) {
     }
 }
 
-module currency_tray(size=Vtray_currency, slots=3, color=undef) {
+module currency_tray(size=Vtray_currency, slots=1, color=undef) {
     r = Rext;
     lip = size.z - Hfloor - 2*r;
     colorize(color) {
@@ -103,8 +103,9 @@ module organizer() {
 *card_tray(Vtray_tech, $fa=Qprint);
 *tray_foot($fa=Qprint);
 *tray_divider($fa=Qprint);
-*currency_tray($fa=Qprint);
+currency_tray($fa=Qprint);
 *currency_tray(slots=2, $fa=Qprint);
-currency_lid($fa=Qprint);
+*currency_tray(slots=3, $fa=Qprint);
+*currency_lid($fa=Qprint);
 
 *organizer();
