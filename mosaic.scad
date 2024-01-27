@@ -20,7 +20,7 @@ Rhex = 0.75 * INCH;  // note: hex tiles are symmetric, but the map grid is not
 
 // available space
 Hmanual = 3;  // measurement varies from 2.5-3.5
-Hmain = 63;
+Hmain = 64;
 Vside = [Vgame.x - Vgameboard.x, Vgame.y, Hceiling];  // side gap dimensions
 
 // card metrics
@@ -30,13 +30,14 @@ Hcard_unsleeved = 0.34;
 Hcard_sleeve = Hsleeve_kings;
 Vcard = Vsleeve_card_game;
 Vcard_divider = [67, 93];
+Vcard_leader = [130, 92];
 
 // container metrics
 Htray = 15;
 Vtray = [72, 100, Htray];
 Vtray_tech = [Vtray.x, Vtray.y, 55];
 Vtray_build = [Vtray.x, Vtray.y, 25];
-Vtray_leaders = [2*Vtray.x, Vtray.y, 8];
+Vtray_leaders = [2*Vtray.x, Vtray.y, 9];
 echo(Vtray_tech=Vtray_tech, Vtray_build=Vtray_build, Vtray_leaders=Vtray_leaders);
 Dlid = 1;
 Vtray_currency = [75, 90, 24];
@@ -44,15 +45,20 @@ echo(Vtray_currency=Vtray_currency);
 
 module card_tray_leaders(size=Vtray_leaders, cut=Dcut, color=undef) {
     vtray = size;
-    vwell = volume(area(vtray) - 2*area(Dwall), vtray.z-Hfloor);
+    well = area(vtray) - 2*area(Dwall);
+    bump = (vtray.x - Vcard_leader.x) / 2 - Rint;
     colorize(color) difference() {
         prism(vtray, r=Rext);
-        raise(Hfloor) prism(vwell, height=vwell.z+cut, r=Rint);
+        raise(Hfloor) prism(height=vtray.z-Hfloor+cut, r=Rint) difference() {
+            square(well, center=true);
+            for (i=[-1,+1]) translate([(vtray.x/2)*i, 0]) rotate(90*i)
+                semistadium(r=bump);
+        }
         for (i=[-1, +1]) translate([vtray.x/4*i, 0]) {
             raise(Hfloor) {
                 // thumb vee
                 span = Dthumb + 2*Rint;
-                dmax = (vwell.x - span) / 4;  // maximum spread of vee at top
+                dmax = (well.x - span) / 4;  // maximum spread of vee at top
                 amin = atan((vtray.z-Hfloor)/dmax);  // minimum vee angle
                 echo(span=span, dmax=dmax, amin=amin);
                 angle = max(Avee, eround(amin, Qfinal));
@@ -85,6 +91,15 @@ module currency_lid(size=Vtray_currency, wall=Dlid, gap=Dgap, color=undef) {
     }
 }
 
+module hex_base(base=1, wall=1, snug=0.05, color=undef) {
+    h = lfloor(Hboard) + base;
+    colorize(color) difference() {
+        prism(height=h, r=wall) hex(r=Rhex+wall);
+        raise(base) prism(height=h) hex(r=Rhex-snug);
+        raise(-Dcut) prism(height=base+2*Dcut) hex(r=Rhex-Rext);
+    }
+}
+
 module organizer() {
     %box_frame();
     card_tray_leaders() {
@@ -103,9 +118,10 @@ module organizer() {
 *card_tray(Vtray_tech, $fa=Qprint);
 *tray_foot($fa=Qprint);
 *tray_divider($fa=Qprint);
-currency_tray($fa=Qprint);
+*currency_tray($fa=Qprint);
 *currency_tray(slots=2, $fa=Qprint);
 *currency_tray(slots=3, $fa=Qprint);
 *currency_lid($fa=Qprint);
+hex_base($fa=Qprint);
 
 *organizer();
