@@ -123,6 +123,7 @@ module organizer() {
 *currency_tray(slots=3, $fa=Qprint);
 *currency_lid($fa=Qprint);
 *hex_base($fa=Qprint);
-hex_base(snug=0.1, $fa=Qprint);  // tighter fit
+*hex_base(snug=0.1, $fa=Qprint);  // tighter fit
+dice_rack(n=9, $fa=Qprint);
 
 *organizer();
