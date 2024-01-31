@@ -43,7 +43,7 @@ Dlid = 1;
 Vtray_currency = [75, 90, 24];
 echo(Vtray_currency=Vtray_currency);
 Vtray_player = [144, 70, 32];  // TODO: width
-Vtray_hex = [110, 66, 21];
+Vtray_hex = [110, 66, 20];
 
 module card_tray_leaders(size=Vtray_leaders, cut=Dcut, color=undef) {
     vtray = size;
@@ -139,8 +139,6 @@ module hex_caddy(color=undef) {
     echo(dx=dx);
     colorize(color) {
         prism(shell, height=Hfloor, r=Rext);
-        translate([0, yint]) prism(height=Hfloor+3*hcity+Dthin, r=Rint)
-            rotate(90) hex(r=Rhex-Rext-1/2);
         raise(Hfloor-Dcut) prism(height=v.z-Hfloor+Dcut, rext=wall/2-EPSILON)
             for (i=[-1,+1]) translate([dx*i, 0]) intersection() {
                 square(shell, center=true);
@@ -154,10 +152,9 @@ module hex_caddy(color=undef) {
     %raise() {
         for (i=[-1,+1]) {
             translate([dx*i, ytown]) rotate(90) hex_tile(height=6*Htile);
-            translate([dx*i, ycity]) rotate(90) hex_tile(height=6*hcity, r=rcity);
+            translate([dx*i, ycity]) rotate(90) hex_tile(height=5*hcity, r=rcity);
         }
-        *translate([0, yint, 3*hcity]) rotate(90) hex_tile(height=3*hcity, r=rcity);
-        translate([0, yint]) rotate(90) hex_base();
+        translate([0, yint]) rotate(90) hex_tile(height=5*hcity, r=rcity);
     }
 }
 
