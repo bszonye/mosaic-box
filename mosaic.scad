@@ -184,20 +184,34 @@ module unit_caddy(color=undef) {
 }
 module player_tray(color=undef) {
     v = Vtray_player;
+    lip = Hfloor;
+    rim = Dthin/2;
+    rrim = Rext-rim;
     well = area(v) - area(2*Dwall);
-    hwell = v.z - Hfloor + Dcut;
-    vend = [Vtray_unit.y + 1, well.y];
-    vmid = [(well.x - 3*Dwall)/2 - vend.x, well.y];
-    echo(vend=vend, vmid=vmid);
+    dscoop = well.y - 2*rim;
+    hscoop = v.z - lip - rim;
+    rscoop = Rext;
+    echo(dscoop=dscoop, hscoop=hscoop);
+    v0 = [Vtray_unit.y+2*Dgap, well.y, v.z-Hfloor-lip+Dcut];
+    x0 = v0.x/2 - well.x/2;
+    v1 = [20, dscoop, hscoop];
+    x1 = well.x/2 - v1.x/2 - rim;
+    v2 = [(well.x - v0.x - v1.x - 3*Dwall - rim)/2, dscoop, hscoop];
+    x2 = v0.x + Dwall + v2.x/2 - well.x/2;
+    v3 = v2;
+    x3 = well.x/2 - rim - v1.x - Dwall - v3.x/2;
+    echo(well.x - v0.x - v1.x - v2.x - 3*Dwall - rim);
+    echo(v0=v0, v1=v1, v2=v2);
     colorize(color) difference() {
         prism(v, r=Rext+Dwall);
-        raise(v.z-Hfloor) prism(well, height=Hfloor+Dcut, r=Rext+Dwall);
-        raise(Hfloor) for (i=[-1,+1]) {
-            translate([(well.x/2 - vend.x/2)*i, 0])
-                prism(vend, height=hwell, r=Rext);
-            translate([(Dwall/2 + vmid.x/2)*i, 0])
-                prism(vmid, height=hwell, r=Rext);
-        }
+        raise(v.z-lip) prism(well, height=lip+Dcut, r=Rext);
+        raise(Hfloor) translate([x0, 0]) prism(v0, r=Rext);
+        raise(Dthin) translate([x1, 0])
+            scoop_well(v1, rint=rrim, rscoop=rscoop, lip=hscoop-rscoop);
+        raise(Dthin) translate([x2, 0])
+            scoop_well(v2, rint=rrim, rscoop=rscoop, lip=hscoop-rscoop);
+        raise(Dthin) translate([x3, 0])
+            scoop_well(v3, rint=rrim, rscoop=rscoop, lip=hscoop-rscoop);
     }
 }
 
@@ -211,7 +225,8 @@ module organizer() {
             raise(2*Htray+2*Dgap) card_tray(Vtray_build);
         }
     }
-    hex_caddy();
+    *hex_caddy();
+    player_tray();
 }
 
 *card_tray_leaders($fa=Qprint);
