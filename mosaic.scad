@@ -42,8 +42,9 @@ echo(Vtray_tech=Vtray_tech, Vtray_build=Vtray_build, Vtray_leaders=Vtray_leaders
 Dlid = 1;
 Vtray_currency = [75, 90, 24];
 echo(Vtray_currency=Vtray_currency);
-Vtray_player = [144, 70, 32];  // TODO: width
+Vtray_player = [144, 70, 14];
 Vtray_hex = [110, 66, 20];
+Vtray_unit = [65, 30, 30];
 
 module card_tray_leaders(size=Vtray_leaders, cut=Dcut, color=undef) {
     vtray = size;
@@ -114,12 +115,12 @@ module hex_caddy(color=undef) {
     echo(rtown=rtown, rcity=rcity, dtown=dtown, dcity=dcity);
     // city & town slot layout
     dslack = (base.y - dcity - dtown) / 2;  // vertical wiggle room
-    ymid = dtown/2 - dcity/2;  // horizontal centerline
-    yint = ymid + tround((rtown - rcity)/2 * sin(60));  // hex slot intersection
-    ytown = ymid - dslack/2 - dtown/2;
-    ycity = ymid + dslack/2 + dcity/2;
+    ymid = dcity/2 - dtown/2;  // horizontal centerline
+    yint = ymid + tround((rcity - rtown)/2 * sin(60));  // hex slot intersection
+    ytown = ymid + dslack/2 + dtown/2;
+    ycity = ymid - dslack/2 - dcity/2;
     wcity = 2*rcity + tround(dslack/2 / sin(60));  // width of city slot
-    hcity = Htile + Dthin;
+    hcity = Htile + Dgap + Dthin;
     echo(dslack=dslack, ymid=ymid, yint=yint, ytown=ytown, ycity=ycity, wcity=wcity);
     echo(wcity - 2*rcity);
     module hex_slot(rhex, dhex) {
@@ -157,6 +158,48 @@ module hex_caddy(color=undef) {
         translate([0, yint]) rotate(90) hex_tile(height=5*hcity, r=rcity);
     }
 }
+module unit_caddy(color=undef) {
+    v = Vtray_unit;
+    well = area(v) - area(2*Dwall);
+    colorize(color) difference() {
+        prism(v, r=Rext);
+        hvee = v.z/2;
+        zvee = v.z - hvee;
+        xvee = v.y - hvee/tan(Avee);  // center ramp on side wall
+        raise(hvee) {
+            translate([0, -v.y/2]) rotate(90) wall_vee_cut([xvee, v.x, zvee]);
+            prism(well, height=hvee+Dcut, r=Rint);
+        }
+        raise(Hfloor) {
+            dsiege = eceil(Hboard, 0.5);
+            dunits = well.y - dsiege - Dthin;
+            wunits = (well.x - Dthin) / 2;
+            echo(dsiege=dsiege, dunits=dunits, wunits=wunits);
+            translate([0, well.y/2 - dsiege/2])
+                prism([well.x, dsiege, hvee], r=Rint);
+            for (i=[-1,+1]) translate([(well.x/2 - wunits/2)*i, dunits/2 - well.y/2])
+                prism([wunits, dunits, hvee], r=Rint);
+        }
+    }
+}
+module player_tray(color=undef) {
+    v = Vtray_player;
+    well = area(v) - area(2*Dwall);
+    hwell = v.z - Hfloor + Dcut;
+    vend = [Vtray_unit.y + 1, well.y];
+    vmid = [(well.x - 3*Dwall)/2 - vend.x, well.y];
+    echo(vend=vend, vmid=vmid);
+    colorize(color) difference() {
+        prism(v, r=Rext+Dwall);
+        raise(v.z-Hfloor) prism(well, height=Hfloor+Dcut, r=Rext+Dwall);
+        raise(Hfloor) for (i=[-1,+1]) {
+            translate([(well.x/2 - vend.x/2)*i, 0])
+                prism(vend, height=hwell, r=Rext);
+            translate([(Dwall/2 + vmid.x/2)*i, 0])
+                prism(vmid, height=hwell, r=Rext);
+        }
+    }
+}
 
 module organizer() {
     %box_frame();
@@ -181,9 +224,11 @@ module organizer() {
 *currency_tray(slots=2, $fa=Qprint);
 *currency_tray(slots=3, $fa=Qprint);
 *currency_lid($fa=Qprint);
+*dice_rack(n=6, $fa=Qprint);
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
-hex_caddy($fa=Qprint);
-*dice_rack(n=6, $fa=Qprint);
+*hex_caddy($fa=Qprint);
+*unit_caddy($fa=Qprint);
+player_tray($fa=Qprint);
 
 *organizer();
