@@ -170,15 +170,18 @@ module unit_caddy(color=undef) {
             translate([0, -v.y/2]) rotate(90) wall_vee_cut([xvee, v.x, zvee]);
             prism(well, height=hvee+Dcut, r=Rint);
         }
-        raise(Hfloor) {
+        raise(Dthin) {
             dsiege = eceil(Hboard, 0.5);
             dunits = well.y - dsiege - Dthin;
             wunits = (well.x - Dthin) / 2;
             echo(dsiege=dsiege, dunits=dunits, wunits=wunits);
-            translate([0, well.y/2 - dsiege/2])
-                prism([well.x, dsiege, hvee], r=Rint);
-            for (i=[-1,+1]) translate([(well.x/2 - wunits/2)*i, dunits/2 - well.y/2])
-                prism([wunits, dunits, hvee], r=Rint);
+            dx = well.x/2 - wunits/2;
+            for (i=[-1,+1]) {
+                translate([dx*i, well.y/2 - dsiege/2])
+                    prism([wunits, dsiege, hvee], r=Rint);
+                translate([dx*i, dunits/2 - well.y/2])
+                    prism([wunits, dunits, hvee], r=Rint);
+            }
         }
     }
 }
@@ -243,7 +246,7 @@ module organizer() {
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
 *hex_caddy($fa=Qprint);
-*unit_caddy($fa=Qprint);
-player_tray($fa=Qprint);
+unit_caddy($fa=Qprint);
+*player_tray($fa=Qprint);
 
 *organizer();
