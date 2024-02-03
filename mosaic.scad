@@ -229,7 +229,10 @@ module organizer() {
         }
     }
     *hex_caddy();
-    player_tray();
+    *player_tray();
+    *box(25, height=5, tabs=true, slots=true);
+    box(50, height=5, grid=2, tabs=true, slots=true);
+    *box_lid(25);
 }
 
 *card_tray_leaders($fa=Qprint);
@@ -242,11 +245,11 @@ module organizer() {
 *currency_tray(slots=2, $fa=Qprint);
 *currency_tray(slots=3, $fa=Qprint);
 *currency_lid($fa=Qprint);
-*dice_rack(n=6, $fa=Qprint);
+dice_rack(n=9, $fa=Qprint);
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
 *hex_caddy($fa=Qprint);
-unit_caddy($fa=Qprint);
+*unit_caddy($fa=Qprint);
 *player_tray($fa=Qprint);
 
 *organizer();
