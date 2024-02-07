@@ -11,12 +11,13 @@ Vgame = [225, 310, 100];
 Hwrap = 82;  // cover art wrap ends here, approximately
 
 // component metrics
-Hboard = 2.1;
+Hboard = 2.15;
 Hmat = 2.2;  // player boards
 Hgameboard = 21;  // measurement varies from 20-21
 Vgameboard = [199, 305, Hgameboard];  // approximately 7.75"x12"
 echo(Vgameboard=Vgameboard);
 Rhex = 0.75 * INCH;  // note: hex tiles are symmetric, but the map grid is not
+Vtile = [45, 70];  // Wonder, Golden Age, Civilization Achievement, Government
 
 // available space
 Hmanual = 3;  // measurement varies from 2.5-3.5
@@ -31,13 +32,13 @@ Hcard_sleeve = Hsleeve_kings;
 Vcard = Vsleeve_card_game;
 Vcard_divider = [67, 93];
 Vcard_leader = [130, 92];
-// deck sizes
+// deck sizes & minimum box heights
 Hcard_tech = 52;
-Hcard_tech_general = 33;  // -> 37 box
-Hcard_tech_starter = 20;  // -> 24 box
-Hcard_build = 20;  // -> 24 box
-Hcard_pop = 11;  // -> 15 box
-Hcard_tax = 11;  // -> 15 box
+Hcard_tech_general = 32;  // 35+ box
+Hcard_tech_starter = 20;  // 23+ box
+Hcard_build = 20;  // 23+ box
+Hcard_pop = 11;  // 14+ box
+Hcard_tax = 11;  // 14+ box
 
 // container metrics
 Htray = 15;
@@ -52,6 +53,14 @@ echo(Vtray_currency=Vtray_currency);
 Vtray_player = [144, 70, 14];
 Vtray_hex = [110, 66, 20];
 Vtray_unit = [65, 30, 30];
+// deck box sizes
+Hbox_tech_general = 35;
+Hbox_tech_starter = 24.5;
+Hbox_build = 24.5;
+Hbox_pop = 15;
+Hbox_tax = 15;
+// cache tokens, fish, and start player
+Hbox_cache = 14;
 
 module card_tray_leaders(size=Vtray_leaders, cut=Dcut, color=undef) {
     vtray = size;
