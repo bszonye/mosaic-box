@@ -1,2 +1,2 @@
 # mosaic-box
-Boxes &amp; bits for Mosaic
+Boxes &amp; bits for Mosaic: A Story of Civilization
