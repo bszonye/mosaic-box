@@ -4,25 +4,24 @@ include <game-box/game.scad>
 
 Qprint = Qfinal;  // or Qdraft
 
-Nplayers = 6;
-
 // game box interior
 Vgame = [225, 310, 100];
 Hwrap = 82;  // cover art wrap ends here, approximately
 
 // component metrics
-Hboard = 2.15;
-Hmat = 2.2;  // player boards
-Hgameboard = 21;  // measurement varies from 20-21
-Vgameboard = [199, 305, Hgameboard];  // approximately 7.75"x12"
-echo(Vgameboard=Vgameboard);
+Nplayers = 6;
+Hboard = tround(13 / Nplayers);  // measured from player boards
+Vmat = [196, 296, Hmat];  // player boards
+Hmap = 21;  // measurement varies from 20-21
+Vmap = [199, 305, Hmap];  // approximately 7.75"x12"
+echo(Vmat=Vmat, Vmap=Vmap);
 Rhex = 0.75 * INCH;  // note: hex tiles are symmetric, but the map grid is not
 Vtile = [45, 70];  // Wonder, Golden Age, Civilization Achievement, Government
 
 // available space
-Hmanual = 3;  // measurement varies from 2.5-3.5
-Hmain = 64;
-Vside = [Vgame.x - Vgameboard.x, Vgame.y, Hceiling];  // side gap dimensions
+Hmanual = 3;  // spine: 2.5, pages: 1.5, reference card: TODO
+Hmain = 63;
+Vside = [Vgame.x - Vmap.x, Vgame.y, Hceiling];  // side gap dimensions
 
 // card metrics
 // Sleeve Kings "Card Game" card sleeves
@@ -246,7 +245,8 @@ module organizer() {
     }
     *hex_caddy();
     *player_tray();
-    box(25, height=5, tabs=true, slots=true);
+    box([96, 72], height=25, notch=Dthumb);
+    *box(25, height=5, tabs=true, slots=true);
     *box(50, height=5, grid=2, tabs=true, slots=true);
     *box_lid(25);
 }
