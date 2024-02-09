@@ -41,7 +41,7 @@ Hcard_tax = 11;  // 14+ box
 
 // container metrics
 Htray = 15;
-Vtray = [72, 100, Htray];
+Vtray = [96, 72, Htray];
 Vtray_tech = [Vtray.x, Vtray.y, 55];
 Vtray_build = [Vtray.x, Vtray.y, 25];
 Vtray_leaders = [2*Vtray.x, Vtray.y, 9];
@@ -53,9 +53,9 @@ Vtray_player = [144, 70, 14];
 Vtray_hex = [110, 66, 20];
 Vtray_unit = [65, 30, 30];
 // deck box sizes
-Hbox_tech_general = 35;
-Hbox_tech_starter = 24.5;
-Hbox_build = 24.5;
+Hbox_tech_general = 36;
+Hbox_tech_starter = 25;
+Hbox_build = 25;
 Hbox_pop = 15;
 Hbox_tax = 15;
 // cache tokens, fish, and start player
@@ -256,21 +256,21 @@ module organizer() {
     *card_tray();
 }
 
-*card_tray_leaders($fa=Qprint);
-*card_tray($fa=Qprint);
-*card_tray(Vtray_build, $fa=Qprint);
-*card_tray(Vtray_tech, $fa=Qprint);
-*tray_foot($fa=Qprint);
-*tray_divider($fa=Qprint);
-*currency_tray($fa=Qprint);
-*currency_tray(slots=2, $fa=Qprint);
-*currency_tray(slots=3, $fa=Qprint);
-*currency_lid($fa=Qprint);
+*card_tray_leaders($fa=Qprint);  // TODO
+*tray_divider($fa=Qprint);  // TODO
+*currency_tray($fa=Qprint);  // TODO
+*currency_tray(slots=2, $fa=Qprint);  // TODO
+*currency_tray(slots=3, $fa=Qprint);  // TODO
+*currency_lid($fa=Qprint);  // TODO
 *dice_rack(n=9, $fa=Qprint);
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
 *hex_caddy($fa=Qprint);
 *unit_caddy($fa=Qprint);
 *player_tray($fa=Qprint);
+*box(Vtray, height=Hbox_tax, notch=true, hole=true, $fa=Qprint);
+box(Vtray, height=Hbox_build, notch=true, hole=true, $fa=Qprint);
+*box(Vtray, height=Hbox_tech_general, tabs=true, slots=true,
+    notch=true, hole=true, $fa=Qprint);
 
-organizer();
+*organizer();
