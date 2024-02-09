@@ -245,10 +245,15 @@ module organizer() {
     }
     *hex_caddy();
     *player_tray();
-    box([96, 72], height=25, notch=Dthumb);
     *box(25, height=5, tabs=true, slots=true);
     *box(50, height=5, grid=2, tabs=true, slots=true);
     *box_lid(25);
+    *translate([-15, 0]) tab([30, 10], joiner=1);
+    *translate([+15, 0]) tab([30, 10], width=10, joiner=1);
+    *box([96, 144, 90], index=true);
+    box([96, 72, 25], notch=true, hole=true);
+    *raise(Hfloor) rotate(90) deck_divider();
+    *card_tray();
 }
 
 *card_tray_leaders($fa=Qprint);
