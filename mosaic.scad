@@ -245,15 +245,20 @@ module organizer() {
     }
     *hex_caddy();
     *player_tray();
+    *box([20, 25], height=5, tabs=true, slots=true);
     *box(25, height=5, tabs=true, slots=true);
     *box(50, height=5, grid=2, tabs=true, slots=true);
     *box_lid(25);
     *translate([-15, 0]) tab([30, 10], joiner=1);
     *translate([+15, 0]) tab([30, 10], width=10, joiner=1);
-    *box([96, 144, 90], index=true);
+    *box([96, 144, 72], index=true);
+    *box([72, 144, 96], index=true);
+    *box([96, 144, 72], index=true, tabs=true, slots=true);
     box([96, 72, 25], notch=true, hole=true);
     *raise(Hfloor) rotate(90) deck_divider();
     *card_tray();
+    *tab([50, 20], w1=undef, w2=50, angle=135, rext=1, joiner=1);
+    *hex_tab([60, 60], rhex=25, angle=60, r=3);
 }
 
 *card_tray_leaders($fa=Qprint);  // TODO
@@ -269,8 +274,8 @@ module organizer() {
 *unit_caddy($fa=Qprint);
 *player_tray($fa=Qprint);
 *box(Vtray, height=Hbox_tax, notch=true, hole=true, $fa=Qprint);
-box(Vtray, height=Hbox_build, notch=true, hole=true, $fa=Qprint);
+*box(Vtray, height=Hbox_build, notch=true, hole=true, $fa=Qprint);
 *box(Vtray, height=Hbox_tech_general, tabs=true, slots=true,
     notch=true, hole=true, $fa=Qprint);
 
-*organizer();
+organizer();
