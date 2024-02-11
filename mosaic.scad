@@ -29,19 +29,20 @@ Vside = [Vgame.x - Vmap.x, Vgame.y, Hceiling];  // side gap dimensions
 Hcard_unsleeved = 0.34;
 Hcard_sleeve = Hsleeve_kings;
 Vcard = Vsleeve_card_game;
-Vcard_divider = [67, 93];
+Vcard_divider = [92, 67.5];
+Hcard_divider = 1.5;
 Vcard_leader = [130, 92];
 // deck sizes & minimum box heights
 Hcard_tech = 52;
-Hcard_tech_general = 32;  // 35+ box
-Hcard_tech_starter = 20;  // 23+ box
-Hcard_build = 20;  // 23+ box
-Hcard_pop = 11;  // 14+ box
-Hcard_tax = 11;  // 14+ box
+Hcard_tech_general = 32;  // 36+ box
+Hcard_tech_starter = 20;  // 24+ box
+Hcard_build = 20;  // 24+ box
+Hcard_pop = 11;  // 15+ box
+Hcard_tax = 11;  // 15+ box
 
 // container metrics
 Htray = 15;
-Vtray = [96, 72, Htray];
+Vtray = [97, 72.5, Htray];
 Vtray_tech = [Vtray.x, Vtray.y, 55];
 Vtray_build = [Vtray.x, Vtray.y, 25];
 Vtray_leaders = [2*Vtray.x, Vtray.y, 9];
@@ -53,7 +54,7 @@ Vtray_player = [144, 70, 14];
 Vtray_hex = [110, 66, 20];
 Vtray_unit = [65, 30, 30];
 // deck box sizes
-Hbox_tech_general = 36;
+Hbox_tech_general = 38;
 Hbox_tech_starter = 25;
 Hbox_build = 25;
 Hbox_pop = 15;
@@ -251,14 +252,21 @@ module organizer() {
     *box_lid(25);
     *translate([-15, 0]) tab([30, 10], joiner=1);
     *translate([+15, 0]) tab([30, 10], width=10, joiner=1);
-    *box([96, 144, 72], index=true);
+    *box([96, 144, 72], index=true)
+        %raise(36) rotate(Sup) box_divider([96, 72], index=true);
     *box([72, 144, 96], index=true);
     *box([96, 144, 72], index=true, tabs=true, slots=true);
-    box([96, 72, 25], notch=true, hole=true);
+    *box([96, 72, 25], notch=true, hole=true);
+    *box(Vtray, height=15, notch=true, hole=true) {
+        %box_divider(Vtray, notch=true);
+        *box_divider(Vtray, notch=true)
+        *rotate(90) deck_divider(swapxy(Vcard_divider));
+    }
     *raise(Hfloor) rotate(90) deck_divider();
     *card_tray();
     *tab([50, 20], w1=undef, w2=50, angle=135, rext=1, joiner=1);
     *hex_tab([60, 60], rhex=25, angle=60, r=3);
+    box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true);
 }
 
 *card_tray_leaders($fa=Qprint);  // TODO
@@ -275,7 +283,8 @@ module organizer() {
 *player_tray($fa=Qprint);
 *box(Vtray, height=Hbox_tax, notch=true, hole=true, $fa=Qprint);
 *box(Vtray, height=Hbox_build, notch=true, hole=true, $fa=Qprint);
-*box(Vtray, height=Hbox_tech_general, tabs=true, slots=true,
-    notch=true, hole=true, $fa=Qprint);
+*box(Vtray, height=Hbox_tech_starter, slots=true, notch=true, hole=true, $fa=Qprint);
+*box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true, $fa=Qprint);
+*box_divider(Vtray, notch=true, $fa=Qprint);
 
 organizer();
