@@ -30,7 +30,7 @@ Hcard_unsleeved = 0.34;
 Hcard_sleeve = Hsleeve_kings;
 Vcard = Vsleeve_card_game;
 Vcard_divider = [92, 67.5];
-Hcard_divider = 1.5;
+Hcard_divider = 2;
 Vcard_leader = [130, 92];
 // deck sizes & minimum box heights
 Hcard_tech = 52;
@@ -45,8 +45,7 @@ Htray = 15;
 Vtray = [97, 72.5, Htray];
 Vtray_tech = [Vtray.x, Vtray.y, 55];
 Vtray_build = [Vtray.x, Vtray.y, 25];
-Vtray_leaders = [2*Vtray.x, Vtray.y, 9];
-echo(Vtray_tech=Vtray_tech, Vtray_build=Vtray_build, Vtray_leaders=Vtray_leaders);
+echo(Vtray_tech=Vtray_tech, Vtray_build=Vtray_build);
 Dlid = 1;
 Vtray_currency = [75, 90, 24];
 echo(Vtray_currency=Vtray_currency);
@@ -57,40 +56,14 @@ Vtray_unit = [65, 30, 30];
 Hbox_tech_general = 38;
 Hbox_tech_starter = 25;
 Hbox_build = 25;
-Hbox_pop = 15;
-Hbox_tax = 15;
+Hbox_pop = 16;
+Hbox_tax = 16;
+Vbox_leaders = [Vcard_leader.x + 6, 9, Vtray.x];
 // cache tokens, fish, and start player
 Hbox_cache = 14;
 
-module card_tray_leaders(size=Vtray_leaders, cut=Dcut, color=undef) {
-    vtray = size;
-    well = area(vtray) - 2*area(Dwall);
-    bump = (vtray.x - Vcard_leader.x) / 2 - Rint;
-    colorize(color) difference() {
-        prism(vtray, r=Rext);
-        raise(Hfloor) prism(height=vtray.z-Hfloor+cut, r=Rint) difference() {
-            square(well, center=true);
-            for (i=[-1,+1]) translate([(vtray.x/2)*i, 0]) rotate(90*i)
-                semistadium(r=bump);
-        }
-        for (i=[-1, +1]) translate([vtray.x/4*i, 0]) {
-            raise(Hfloor) {
-                // thumb vee
-                span = Dthumb + 2*Rint;
-                dmax = (well.x - span) / 4;  // maximum spread of vee at top
-                amin = atan((vtray.z-Hfloor)/dmax);  // minimum vee angle
-                echo(span=span, dmax=dmax, amin=amin);
-                angle = max(Avee, eround(amin, Qfinal));
-                translate([0, Dwall-vtray.y]/2)
-                    wall_vee_cut([span, Dwall, vtray.z-Hfloor], angle=angle, cut=cut);
-            }
-            floor_thumb_cut(vtray, cut=cut);
-        }
-    }
-    raise(vtray.z+Dgap) {
-        if ($children) translate([-vtray.x/4, 0]) children(0);
-        if (1 < $children) translate([+vtray.x/4, 0]) children(1);
-    }
+module leaders_box(size=Vbox_leaders, color=undef) {
+    box(size=size, draw=true);
 }
 
 module currency_tray(size=Vtray_currency, slots=1, color=undef) {
@@ -235,15 +208,7 @@ module player_tray(color=undef) {
 }
 
 module organizer() {
-    %box_frame();
-    *card_tray_leaders() {
-        card_tray(Vtray_tech);
-        union() {
-            card_tray();
-            raise(Htray+Dgap) card_tray();
-            raise(2*Htray+2*Dgap) card_tray(Vtray_build);
-        }
-    }
+    *%box_frame();
     *hex_caddy();
     *player_tray();
     *box([20, 25], height=5, tabs=true, slots=true);
@@ -266,11 +231,16 @@ module organizer() {
     *card_tray();
     *tab([50, 20], w1=undef, w2=50, angle=135, rext=1, joiner=1);
     *hex_tab([60, 60], rhex=25, angle=60, r=3);
-    box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true);
+    *box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true);
+    *%translate([0, 12.5]) rotate(-90)
+        deck_box(size=Vcard, width=25, draw=true, feet=true);
+    *box(size=[97, 25, 70.5], draw=true, feet=true);
+    *%translate([0, 5]) rotate(-90)
+        deck_box(size=[93, 130], width=10, draw=true, feet=true);
+    *box(size=[136, 9, 97], draw=true);
 }
 
-*card_tray_leaders($fa=Qprint);  // TODO
-*tray_divider($fa=Qprint);  // TODO
+leaders_box($fa=Qprint);  // TODO
 *currency_tray($fa=Qprint);  // TODO
 *currency_tray(slots=2, $fa=Qprint);  // TODO
 *currency_tray(slots=3, $fa=Qprint);  // TODO
@@ -287,4 +257,4 @@ module organizer() {
 *box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true, $fa=Qprint);
 *box_divider(Vtray, notch=true, $fa=Qprint);
 
-organizer();
+*organizer();
