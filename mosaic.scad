@@ -10,7 +10,9 @@ Hwrap = 82;  // cover art wrap ends here, approximately
 
 // component metrics
 Nplayers = 6;
-Hboard = tround(13 / Nplayers);  // measured from player boards
+Hboard = tround(32.10 / 15);  // measured from achievement tiles
+Hmat = tround(13 / Nplayers);  // measured from player boards
+echo(Hboard=Hboard, Hmat=Hmat);
 Vmat = [196, 296, Hmat];  // player boards
 Hmap = 21;  // measurement varies from 20-21
 Vmap = [199, 305, Hmap];  // approximately 7.75"x12"
