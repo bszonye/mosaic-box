@@ -10,6 +10,7 @@ Hwrap = 82;  // cover art wrap ends here, approximately
 
 // component metrics
 Nplayers = 6;
+Npillars = 9;
 Hboard = tround(32.10 / 15);  // measured from achievement tiles
 Hmat = tround(13 / Nplayers);  // measured from player boards
 echo(Hboard=Hboard, Hmat=Hmat);
@@ -17,7 +18,8 @@ Vmat = [196, 296, Hmat];  // player boards
 Hmap = 21;  // measurement varies from 20-21
 Vmap = [199, 305, Hmap];  // approximately 7.75"x12"
 echo(Vmat=Vmat, Vmap=Vmap);
-Rhex = 0.75 * INCH;  // note: hex tiles are symmetric, but the map grid is not
+Rhex = 3/4 * INCH;  // note: hex tiles are symmetric, but the map grid is not
+Rtrade = 1/2 * INCH;  // cache & trade goods tokens
 Vtile = [45, 70];  // Wonder, Golden Age, Civilization Achievement, Government
 
 // available space
@@ -43,6 +45,7 @@ Hcard_pop = 11;  // 15+ box
 Hcard_tax = 11;  // 15+ box
 
 // container metrics
+Hlip = 1;
 Htray = 15;
 Vtray = [97, 72.5, Htray];
 Vtray_tech = [Vtray.x, Vtray.y, 55];
@@ -64,16 +67,48 @@ Vbox_leaders = [Vcard_leader.x + 6, 9, Vtray.x];
 // cache tokens, fish, and start player
 Hbox_cache = 14;
 
-module leaders_box(size=Vbox_leaders, color=undef) {
-    box(size=size, draw=true);
+module leader_box(size=Vbox_leaders, color=undef) {
+    box(size=size, draw=true, color=color);
+}
+module tile_box(n=Npillars, color=undef) {
+    thick = wall_thickness(thick=true);
+    thin = wall_thickness(thick=false);
+    tiles = Htile*n;
+    echo(tiles=tiles);
+    d = ceil(tiles) + 2*Dwall;
+    d9 = ceil(Htile*Npillars) + 2*Dwall;
+    w = Vtile.y + 2*Rext;
+    h = Vtile.x + Hfloor + Hlip;
+    vbox = [w, d, h];
+    vbox9 = [w, d9, h];
+    well = vbox - [2*thick, 2*thin, 0];
+    ot = [0, vbox.y/2 - d9/2];
+    difference() {
+        box(vbox, well=well, draw=tround(Vtile.x/3), color=color);
+        translate(ot) stacking_tabs(vbox9, slot=true);
+    }
+    colorize(color) translate(ot) raise(vbox.z) stacking_tabs(vbox9);
+    // children
+    if ($children) raise() children(0);
+    if (1<$children) translate(ot) raise(vbox.z+EPSILON) children([1:$children-1]);
+}
+module token_rack(n=undef, last=undef, wall=Dwall, divider=1.5, color=undef) {
+    // create a rack for cache & trade goods tokens
+    nstack = floor((Hmain - Hfloor) / Htoken);
+    n = is_undef(n) ? nstack : n;
+    ncols = ceil(n / nstack);
+    nlast = n % nstack;  // number of tokens in the last column
+    last = is_undef(last) ? floor(ncols/2) : last;  // index of "last" column
+    echo(n=n, nstack=nstack, ncols=ncols, nlast=nlast, last=last);
+    colorize(color) {
+        // TODO
+    }
 }
 
 module currency_tray(size=Vtray_currency, slots=1, color=undef) {
     r = Rext;
     lip = size.z - Hfloor - 2*r;
-    colorize(color) {
-        scoop_tray(size=size, grid=[1, slots], rscoop=r, lip=lip);
-    }
+    scoop_tray(size=size, grid=[1, slots], rscoop=r, lip=lip, color=color);
 }
 module currency_lid(size=Vtray_currency, wall=Dlid, gap=Dgap, color=undef) {
     well = area(size) + area(2*gap);
@@ -240,13 +275,20 @@ module organizer() {
     *%translate([0, 5]) rotate(-90)
         deck_box(size=[93, 130], width=10, draw=true, feet=true);
     *box(size=[136, 9, 97], draw=true);
+    *tile_box(n=12, $fa=Qprint) { union(); tile_box(); }
+    token_rack($fa=Qprint);
+    for (i=[-1,+1]) translate([57.5*i, 0]) token_rack(74, $fa=Qprint);
 }
 
-leaders_box($fa=Qprint);  // TODO
-*currency_tray($fa=Qprint);  // TODO
-*currency_tray(slots=2, $fa=Qprint);  // TODO
-*currency_tray(slots=3, $fa=Qprint);  // TODO
-*currency_lid($fa=Qprint);  // TODO
+*token_rack($fa=Qprint);
+*token_rack(74, $fa=Qprint);
+*leader_box($fa=Qprint);
+*tile_box($fa=Qprint);
+*tile_box(n=12, $fa=Qprint);
+*currency_tray($fa=Qprint);
+*currency_tray(slots=2, $fa=Qprint);
+*currency_tray(slots=3, $fa=Qprint);
+*currency_lid($fa=Qprint);
 *dice_rack(n=9, $fa=Qprint);
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
@@ -259,4 +301,4 @@ leaders_box($fa=Qprint);  // TODO
 *box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true, $fa=Qprint);
 *box_divider(Vtray, notch=true, $fa=Qprint);
 
-*organizer();
+organizer();
