@@ -92,16 +92,36 @@ module tile_box(n=Npillars, color=undef) {
     if ($children) raise() children(0);
     if (1<$children) translate(ot) raise(vbox.z+EPSILON) children([1:$children-1]);
 }
-module token_rack(n=undef, last=undef, wall=Dwall, divider=1.5, color=undef) {
+module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
+                  wall=Dwall, divider=Dwall, lip=Htoken/3, color=undef) {
     // create a rack for cache & trade goods tokens
-    nstack = floor((Hmain - Hfloor) / Htoken);
+    nstack = floor((height - lip - Hfloor) / Htoken);
     n = is_undef(n) ? nstack : n;
     ncols = ceil(n / nstack);
-    nlast = n % nstack;  // number of tokens in the last column
+    nlast = (n-1) % nstack + 1;  // number of tokens in the last column
     last = is_undef(last) ? floor(ncols/2) : last;  // index of "last" column
-    echo(n=n, nstack=nstack, ncols=ncols, nlast=nlast, last=last);
-    colorize(color) {
-        // TODO
+    dwell = ceil(2*Rtrade);
+    w = ncols * (dwell + divider) - divider + 2*wall;
+    d = dwell + wall;
+    v = [w, d, height];
+    o = wall + dwell/2 - v.x/2;
+    dx = dwell + divider;
+    echo(v=v, n=n, nstack=nstack, ncols=ncols, nlast=nlast, last=last);
+    colorize(color) difference() {
+        prism(v, r=r);
+        for (i=[0:ncols-1]) {
+            hstack = Htoken * (i == last ? nlast : nstack);
+            hwell = lceil(hstack + lip);
+            echo(i=i, hstack=hstack, hwell=hwell);
+            translate([o+i*dx, -v.y/2, v.z - hwell])
+                prism(height=hwell+Dcut) circle_notch(d=dwell);
+        }
+    }
+    // preview fit
+    %for (i=[0:ncols-1]) {
+        hstack = Htoken * (i == last ? nlast : nstack);
+        hwell = lceil(hstack + lip);
+        translate([o+i*dx, -wall/2, v.z - hwell]) cylinder(h=hstack, r=Rtrade);
     }
 }
 
@@ -276,12 +296,13 @@ module organizer() {
         deck_box(size=[93, 130], width=10, draw=true, feet=true);
     *box(size=[136, 9, 97], draw=true);
     *tile_box(n=12, $fa=Qprint) { union(); tile_box(); }
-    token_rack($fa=Qprint);
-    for (i=[-1,+1]) translate([57.5*i, 0]) token_rack(74, $fa=Qprint);
+    translate([0, -15]) token_rack(38, height=43, $fa=Qprint);
+    translate([0, +15]) token_rack(138, $fa=Qprint);
 }
 
-*token_rack($fa=Qprint);
-*token_rack(74, $fa=Qprint);
+token_rack(38, height=43, lip=0, $fa=Qprint);  // cache tokens & fish (tighter)
+*token_rack(38, height=44, lip=Htoken/2, $fa=Qprint);  // cache tokens & fish
+*token_rack(138, $fa=Qprint);  // trade goods tokens
 *leader_box($fa=Qprint);
 *tile_box($fa=Qprint);
 *tile_box(n=12, $fa=Qprint);
@@ -301,4 +322,4 @@ module organizer() {
 *box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true, $fa=Qprint);
 *box_divider(Vtray, notch=true, $fa=Qprint);
 
-organizer();
+*organizer();
