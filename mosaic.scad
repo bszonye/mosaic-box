@@ -83,11 +83,7 @@ module tile_box(n=Npillars, color=undef) {
     vbox9 = [w, d9, h];
     well = vbox - [2*thick, 2*thin, 0];
     ot = [0, vbox.y/2 - d9/2];
-    difference() {
-        box(vbox, well=well, draw=tround(Vtile.x/3), color=color);
-        translate(ot) stacking_tabs(vbox9, slot=true);
-    }
-    colorize(color) translate(ot) raise(vbox.z) stacking_tabs(vbox9);
+    box(vbox, well=well, draw=tround(Vtile.x/3), tabs=-d9, slots=-d9, color=color);
     // children
     if ($children) raise() children(0);
     if (1<$children) translate(ot) raise(vbox.z+EPSILON) children([1:$children-1]);
@@ -295,12 +291,12 @@ module organizer() {
     *%translate([0, 5]) rotate(-90)
         deck_box(size=[93, 130], width=10, draw=true, feet=true);
     *box(size=[136, 9, 97], draw=true);
-    *tile_box(n=12, $fa=Qprint) { union(); tile_box(); }
-    translate([0, -15]) token_rack(38, height=43, $fa=Qprint);
-    translate([0, +15]) token_rack(138, $fa=Qprint);
+    tile_box(n=12, $fa=Qprint) { union(); tile_box(); }
+    *translate([0, -15]) token_rack(38, height=43, $fa=Qprint);
+    *translate([0, +15]) token_rack(138, $fa=Qprint);
 }
 
-token_rack(38, height=43, lip=0, $fa=Qprint);  // cache tokens & fish (tighter)
+*token_rack(38, height=43, lip=0, $fa=Qprint);  // cache tokens & fish (tighter)
 *token_rack(38, height=44, lip=Htoken/2, $fa=Qprint);  // cache tokens & fish
 *token_rack(138, $fa=Qprint);  // trade goods tokens
 *leader_box($fa=Qprint);
@@ -322,4 +318,4 @@ token_rack(38, height=43, lip=0, $fa=Qprint);  // cache tokens & fish (tighter)
 *box(Vtray, height=Hbox_tech_general, tabs=true, notch=true, hole=true, $fa=Qprint);
 *box_divider(Vtray, notch=true, $fa=Qprint);
 
-*organizer();
+organizer();
