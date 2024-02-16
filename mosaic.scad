@@ -72,7 +72,7 @@ module card_box(height, tabs=false, slots=false, color=undef) {
         union() {
             stack = height - 5;  // approximate deck height
             %rotate(90) color(color, 0.5) prism(Vcard, height-5);
-            raise(stack + EPSILON) deck_divider(color=color);
+            %raise(stack + EPSILON) deck_divider(color=color);
         }
         children();
     }
@@ -167,7 +167,7 @@ module hex_caddy(color=undef) {
     dcity = tround(2*rcity*sin(60));
     echo(rtown=rtown, rcity=rcity, dtown=dtown, dcity=dcity);
     // city & town slot layout
-    dslack = (base.x - dcity - dtown - 2*wall) / 2;  // wiggle room for hexes
+    dslack = (base.x - dcity - dtown - wall) / 2;  // wiggle room for hexes
     xmid = dtown/2 - dcity/2;  // horizontal centerline
     xint = xmid + tround((rtown - rcity)/2 * sin(60));  // hex slot intersection
     xtown = xmid - dslack/2 - dtown/2;
@@ -249,7 +249,7 @@ module player_tray(color=undef) {
     colorize(color) difference() {
         prism(v, r=r);
     }
-    translate([0, v.y/2 - Vtray_hex.y/2, v.z+EPSILON]) children();
+    translate([0, Vtray_hex.y/2 - v.y/2, v.z+EPSILON]) children();
     *union() {
         lip = Hfloor;
         rim = Dthin/2;
@@ -375,8 +375,8 @@ module organizer(explode=0) {
 }
 
 *box_divider(Vtray, notch=true, $fa=Qprint);
-*card_box(Hbox_tax, $fa=Qprint);
-*card_box(Hbox_build, $fa=Qprint);
+*card_box(Hbox_tax, slots=true, $fa=Qprint);
+*card_box(Hbox_build, slots=true, $fa=Qprint);
 *card_box(Hbox_tech_starter, slots=true, $fa=Qprint);
 *card_box(Hbox_tech_general, tabs=true, $fa=Qprint);
 *currency_box($fa=Qprint);  // stone, food, and ideas
