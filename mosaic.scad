@@ -64,9 +64,20 @@ Hbox_build = 25;
 Hbox_pop = 16;
 Hbox_tax = 16;
 Vbox_leaders = [Vcard_leader.x + 6, 9, Vtray.x];
-// cache tokens, fish, and start player
-Hbox_cache = 14;
+// bin sizes
+Hbox_misc = 13;  // miscellaneous bits (start player, wonder board tiles, etc.)
+Hbox_bag = 25;  // token bag storage
+Vbox_cache_spacer = [58, 28, 20];  // spacer for cache token rack
 
+module basic_box(size=Vbox, height=undef, stack=false, scoop=false,
+                    thick=true, color=undef) {
+    // simple box for storage & spacing
+    box(size=size, height=height, tabs=stack, slots=stack, scoop=scoop,
+        thick=thick, color=color) {
+        union();
+        children();
+    }
+}
 module card_box(height, tabs=false, slots=false, color=undef) {
     box(Vtray, height, tabs=tabs, slots=slots, notch=true, hole=true, color=color) {
         union() {
@@ -146,6 +157,7 @@ module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
     // children
     raise(height + EPSILON) children();
 }
+
 module hex_base(base=Dthin, wall=Dthin, snug=0.05, color=undef) {
     h = lfloor(Hboard) + base;
     colorize(color) difference() {
@@ -326,7 +338,7 @@ module organizer(explode=0) {
             }
             translate([38, -12]) tile_box(color=Cbronze) {
                 %translate(o9) rotate(r) tile_stack(color=Cwonder);
-                tile_box(color=Cbronze)
+                raise(explode) tile_box(color=Cbronze)
                     %translate(o9) rotate(r) tile_stack(color=Cgolden);
             }
         }
@@ -334,10 +346,9 @@ module organizer(explode=0) {
     // map tokens
     translate(q4) {
         // cache & fish tokens
-        translate([-29, 14]) box([58, 28, 20], thick=true, color=Cbronze) {
-            union();
-            raise(explode) token_rack(38, height=43, lip=0, color=Cbronze);
-        }
+        translate([-29, 14])
+            basic_box(Vbox_cache_spacer, color=Cbronze)
+                raise(explode) token_rack(38, height=43, lip=0, color=Cbronze);
         // trade goods tokens
         translate([-Dgap-129, 14]) token_rack(138, color=Cbronze);
     }
@@ -347,7 +358,11 @@ module organizer(explode=0) {
             card_box(Hbox_tech_general, tabs=true, color=Ctech)
                 card_box(Hbox_tech_starter, slots=true, color=Ctech);
         translate([-Vtray.x/2-Dgap/2, -Vtray.y/2-Dgap/2])
-            rotate(180) card_box(Hbox_build, slots=true, color=Cbuild);
+            basic_box(height=Hbox_bag, stack=true, scoop=true, color=Cbronze)
+            raise(explode)
+                basic_box(height=Hbox_misc, stack=true, scoop=true, color=Cbronze)
+            raise(explode)
+                rotate(180) card_box(Hbox_build, slots=true, color=Cbuild);
         translate([+Vtray.x/2+Dgap/2, 0])
             currency_box(color=Cbronze)
             raise(explode/6)
@@ -374,6 +389,8 @@ module organizer(explode=0) {
     }
 }
 
+*basic_box(height=Hbox_bag, stack=true, scoop=true, $fa=Qprint);
+*basic_box(height=Hbox_misc, stack=true, scoop=true, $fa=Qprint);
 *box_divider(Vtray, notch=true, $fa=Qprint);
 *card_box(Hbox_tax, slots=true, $fa=Qprint);
 *card_box(Hbox_build, slots=true, $fa=Qprint);
@@ -387,7 +404,7 @@ module organizer(explode=0) {
 *dice_rack(n=9, $fa=Qprint);
 *token_rack(38, height=43, lip=0, $fa=Qprint);  // cache tokens & fish
 *token_rack(138, $fa=Qprint);  // trade goods tokens
-*box([58, 28, 20], thick=true, $fa=Qprint);  // token rack spacer
+*basic_box(Vbox_cache_spacer, $fa=Qprint);  // token rack spacer
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
 // TODO: update
@@ -395,5 +412,5 @@ module organizer(explode=0) {
 *unit_caddy($fa=Qprint);
 *player_tray($fa=Qprint);
 
-organizer();
-*organizer(explode=30);
+*organizer();
+organizer(explode=30);
