@@ -382,7 +382,7 @@ module organizer(explode=0) {
 *hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
 *hex_caddy($fa=Qprint);
-player_tray($fa=Qprint);
+*player_tray($fa=Qprint);
 
 *organizer();
-*organizer(explode=30);
+organizer(explode=30);
