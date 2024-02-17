@@ -26,7 +26,6 @@ Vunit = [27.25, 27.25];  // military units
 // available space
 Hmanual = 3;  // spine: 2.5, pages: 1.5, reference card: TODO
 Hmain = 63;
-Vside = [Vgame.x - Vmap.x, Vgame.y, Hceiling];  // side gap dimensions
 
 // card metrics
 // Sleeve Kings "Card Game" card sleeves
@@ -49,14 +48,9 @@ Hcard_tax = 11;  // 15+ box
 Hlip = 1;
 Htray = 15;
 Vtray = [97, 72.5, Htray];
-Vtray_tech = [Vtray.x, Vtray.y, 55];
-Vtray_build = [Vtray.x, Vtray.y, 25];
-echo(Vtray_tech=Vtray_tech, Vtray_build=Vtray_build);
-Dlid = 1;
 Vtray_currency = [Vtray.x, 2*Vtray.y, 11.75];
-echo(Vtray_currency=Vtray_currency);
+Vtray_hex = [71.5, 110, 19.5];
 Vtray_player = [71.5, 135, 31.5];
-Vtray_hex = [71.5, 110, 19.5];  // TODO: shrink if possible
 // deck box sizes
 Hbox_tech_general = 38;
 Hbox_tech_starter = 25;
@@ -293,6 +287,16 @@ module organizer(explode=0) {
     q2 = [-Vgame.x/2, +Vgame.y/2];
     q3 = [-Vgame.x/2, -Vgame.y/2];
     q4 = [+Vgame.x/2, -Vgame.y/2];
+    // player caddies
+    translate(q1 - area(Vtray_player)/2) for (i=[0:5]) {
+        dx = Vtray_player.x + Dgap;
+        dz = Hmain/2 + Dgap;
+        o = [-(i < 3 ? i : 5-i)*dx, 0, floor((5-i)/3)*dz];
+        translate (o) {
+            player_tray(color=Cplayer[i])
+                raise(i < 3 ? (3-i)*explode/2 : 0) hex_caddy(color=Cplayer[i]);
+        }
+    }
     // leaders
     translate(q2 + [+Vbox_leaders.y/2, -Vbox_leaders.x/2])
         rotate(90) leader_box(color=Cbronze);
@@ -350,16 +354,6 @@ module organizer(explode=0) {
                 translate([+0, +Vtray.y/2+EPSILON])
                     rotate(180) card_box(Hbox_pop, slots=true, color=Cpop);
             }
-    }
-    // player consoles
-    translate(q1 - area(Vtray_player)/2) for (i=[0:5]) {
-        dx = Vtray_player.x + Dgap;
-        dz = Hmain/2 + Dgap;
-        o = [-(i < 3 ? i : 5-i)*dx, 0, floor((5-i)/3)*dz];
-        translate (o) {
-            player_tray(color=Cplayer[i])
-                raise(i < 3 ? (3-i)*explode/2 : 0) hex_caddy(color=Cplayer[i]);
-        }
     }
 }
 
