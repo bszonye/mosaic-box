@@ -71,7 +71,7 @@ module basic_box(size=Vbox, height=undef, stack=false, scoop=false,
         children();
 }
 module card_box(height, tabs=false, slots=false, color=undef) {
-    box(Vtray, height, tabs=tabs, slots=slots, notch=true, hole=true, color=color)
+    box(Vtray, height, tabs=tabs, slots=slots, hole=true, thumb=true, color=color)
         children();
     %colorize(color, 0.5) raise() {
         stack = height - 5;  // approximate deck height
@@ -107,7 +107,7 @@ module tile_box(n=Npillars, color=undef) {
     vbox9 = [w, d9, h];
     well = vbox - [2*thick, 2*thin, 0];
     ot = [0, vbox.y/2 - d9/2];
-    box(vbox, well=well, draw=tround(Vtile.x/3), tabs=-d9, slots=-d9, color=color);
+    box(vbox, well=well, tabs=-d9, slots=-d9, draw=tround(Vtile.x/3), color=color);
     // children
     if ($children) raise() children(0);
     if (1<$children) translate(ot) raise(vbox.z+EPSILON) children([1:$children-1]);
