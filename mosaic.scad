@@ -67,27 +67,22 @@ module basic_box(size=Vbox, height=undef, stack=false, scoop=false,
                     thick=true, color=undef) {
     // simple box for storage & spacing
     box(size=size, height=height, tabs=stack, slots=stack, scoop=scoop,
-        thick=thick, color=color) {
-        union();
+        thick=thick, color=color)
         children();
-    }
 }
 module card_box(height, tabs=false, slots=false, color=undef) {
-    box(Vtray, height, tabs=tabs, slots=slots, notch=true, hole=true, color=color) {
-        union() {
-            stack = height - 5;  // approximate deck height
-            %rotate(90) color(color, 0.5) prism(Vcard, height-5);
-            %raise(stack + EPSILON) deck_divider(color=color);
-        }
+    box(Vtray, height, tabs=tabs, slots=slots, notch=true, hole=true, color=color)
         children();
+    %colorize(color, 0.5) raise() {
+        stack = height - 5;  // approximate deck height
+        rotate(90) color(color, 0.5) prism(Vcard, height-5);
+        raise(stack + EPSILON) deck_divider(color=color);
     }
 }
 module currency_box(n=3, height=Vtray_currency.z, color=undef) {
     box(Vtray_currency, height, depth=height-1, grid=[1, n],
-        slots=true, scoop=true, color=color) {
-        union();
+        slots=true, scoop=true, color=color)
         children();
-    }
     colorize(color) for (i=[-1,+1])
         translate([0, Vtray.y/2*i, Vtray_currency.z]) stacking_tabs(Vtray);
 }
@@ -241,10 +236,8 @@ module player_tray(color=undef) {
     vbase = volume(Vtray_hex, v.z - Vtray_hex.z);
     dbase = vbase.z - 1;
     translate([0, v.y/2 - Vtray_hex.y/2]) {
-        box(vbase, grid=[1, 2], depth=dbase, tabs=true, scoop=true, color=color) {
-            union();
+        box(vbase, grid=[1, 2], depth=dbase, tabs=true, scoop=true, color=color)
             children();
-        }
     }
     wunits = eround(2*Vunit.x + 2*wall + ddiv + 4, 0.5);
     vunits = [wunits, v.y - vbase.y + wall - Djoiner, v.z];
