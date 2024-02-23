@@ -45,7 +45,6 @@ Hcard_pop = 11;  // 15+ box
 Hcard_tax = 11;  // 15+ box
 
 // container metrics
-Hlip = 1;
 Htray = 15;
 Vtray = [97, 72.5, Htray];
 Vtray_currency = [Vtray.x, 2*Vtray.y, 11.75];
@@ -95,22 +94,26 @@ module tile_stack(n=Npillars, up=false, color=undef) {
     raise(h + EPSILON) children();
 }
 module tile_box(n=Npillars, color=undef) {
-    thick = wall_thickness(thick=true);
-    thin = wall_thickness(thick=false);
+    wall = wall_thickness(thick=false);
+    side = wall_thickness(thick=true);
     tiles = Htile*n;
-    echo(tiles=tiles);
-    d = ceil(tiles) + 2*Dwall;
-    d9 = ceil(Htile*Npillars) + 2*Dwall;
+    d = ceil(tiles) + ceil(2*wall);
+    d9 = ceil(Htile*Npillars) + ceil(2*wall);
+    echo(tiles=tiles, d=d, d9=d9);
     w = Vtile.y + 2*Rext;
     h = Vtile.x + Hfloor + Hlip;
-    vbox = [w, d, h];
-    vbox9 = [w, d9, h];
-    well = vbox - [2*thick, 2*thin, 0];
-    ot = [0, vbox.y/2 - d9/2];
-    box(vbox, well=well, tabs=-d9, slots=-d9, draw=tround(Vtile.x/3), color=color);
+    v = [w, d, h];
+    well = [w-2*side, d-2*wall, h-Hfloor+Dcut];
+    lip = [w-2*Drim, d9-2*Drim, Hstack+Dcut];
+    o = [0, d/2 - d9/2];
+    colorize(color) difference() {
+        box(v, grid=0, draw=tround(Vtile.x/3), stack=true, lip=false);
+        raise(Hfloor) prism(well, r=Rext-wall);
+        translate([o.x, o.y, h-Hstack]) prism(lip, r=Rext-Drim);
+    }
     // children
     if ($children) raise() children(0);
-    if (1<$children) translate(ot) raise(vbox.z+EPSILON) children([1:$children-1]);
+    if (1<$children) translate(o) raise(h-Hstack+EPSILON) children([1:$children-1]);
 }
 module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
                   wall=Dwall, divider=Dwall, lip=Htoken/3, color=undef) {
