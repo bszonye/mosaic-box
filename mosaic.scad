@@ -86,7 +86,7 @@ module currency_box(n=3, height=Vtray_currency.z, color=undef) {
         translate([0, Vtray.y/2*i, Vtray_currency.z]) stacking_tabs(Vtray);
 }
 module leader_box(color=undef) {
-    box(size=Vbox_leaders, draw=true, color=color);
+    box(size=Vbox_leaders, draw=true, notch=true, color=color);
 }
 module tile_stack(n=Npillars, up=false, color=undef) {
     h = n * Htile;
@@ -104,16 +104,15 @@ module tile_box(n=Npillars, color=undef) {
     h = Vtile.x + Hfloor + Hlip;
     v = [w, d, h];
     well = [w-2*side, d-2*wall, h-Hfloor+Dcut];
-    lip = [w-2*Drim, d9-2*Drim, Hstack+Dcut];
-    o = [0, d/2 - d9/2];
+    otop = [0, d/2 - d9/2];
     colorize(color) difference() {
-        box(v, grid=0, draw=tround(Vtile.x/3), stack=true, lip=false);
+        box(v, grid=0, draw=true, notch=tround(Vtile.x/3), stack=true);
         raise(Hfloor) prism(well, r=Rext-wall);
-        translate([o.x, o.y, h-Hstack]) prism(lip, r=Rext-Drim);
     }
     // children
     if ($children) raise() children(0);
-    if (1<$children) translate(o) raise(h-Hstack+EPSILON) children([1:$children-1]);
+    if (1<$children) translate(otop) raise(h-Hstack+EPSILON)
+        children([1:$children-1]);
 }
 module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
                   wall=Dwall, divider=Dwall, lip=Htoken/3, color=undef) {
