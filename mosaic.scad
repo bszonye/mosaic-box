@@ -368,10 +368,10 @@ module organizer(explode=0) {
 *token_rack(38, height=43, lip=0, $fa=Qprint);  // cache tokens & fish
 *token_rack(138, $fa=Qprint);  // trade goods tokens
 *basic_box(Vbox_cache_spacer, $fa=Qprint);  // token rack spacer
-hex_base($fa=Qprint);
+*hex_base($fa=Qprint);
 *hex_base(snug=0.1, $fa=Qprint);  // tighter fit
 *hex_caddy($fa=Qprint);
 *player_tray($fa=Qprint);
 
 *organizer();
-*organizer(explode=30);
+organizer(explode=30);
