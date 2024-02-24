@@ -45,7 +45,6 @@ Hcard_pop = 11;  // 15+ box
 Hcard_tax = 11;  // 15+ box
 
 // container metrics
-Hlip = 1;
 Htray = 15;
 Vtray = [97, 72.5, Htray];
 Vtray_currency = [Vtray.x, 2*Vtray.y, 11.75];
@@ -67,32 +66,27 @@ module basic_box(size=Vbox, height=undef, stack=false, scoop=false,
                     thick=true, color=undef) {
     // simple box for storage & spacing
     box(size=size, height=height, tabs=stack, slots=stack, scoop=scoop,
-        thick=thick, color=color) {
-        union();
+        thick=thick, color=color)
         children();
-    }
 }
 module card_box(height, tabs=false, slots=false, color=undef) {
-    box(Vtray, height, tabs=tabs, slots=slots, notch=true, hole=true, color=color) {
-        union() {
-            stack = height - 5;  // approximate deck height
-            %rotate(90) color(color, 0.5) prism(Vcard, height-5);
-            %raise(stack + EPSILON) deck_divider(color=color);
-        }
+    box(Vtray, height, tabs=tabs, slots=slots, hole=true, thumb=true, color=color)
         children();
+    %colorize(color, 0.5) raise() {
+        stack = height - 5;  // approximate deck height
+        rotate(90) color(color, 0.5) prism(Vcard, height-5);
+        raise(stack + EPSILON) deck_divider(color=color);
     }
 }
 module currency_box(n=3, height=Vtray_currency.z, color=undef) {
     box(Vtray_currency, height, depth=height-1, grid=[1, n],
-        slots=true, scoop=true, color=color) {
-        union();
+        slots=true, scoop=true, color=color)
         children();
-    }
     colorize(color) for (i=[-1,+1])
         translate([0, Vtray.y/2*i, Vtray_currency.z]) stacking_tabs(Vtray);
 }
 module leader_box(color=undef) {
-    box(size=Vbox_leaders, draw=true, color=color);
+    box(size=Vbox_leaders, draw=true, notch=true, color=color);
 }
 module tile_stack(n=Npillars, up=false, color=undef) {
     h = n * Htile;
@@ -100,22 +94,25 @@ module tile_stack(n=Npillars, up=false, color=undef) {
     raise(h + EPSILON) children();
 }
 module tile_box(n=Npillars, color=undef) {
-    thick = wall_thickness(thick=true);
-    thin = wall_thickness(thick=false);
+    wall = wall_thickness(thick=false);
+    side = wall_thickness(thick=true);
     tiles = Htile*n;
-    echo(tiles=tiles);
-    d = ceil(tiles) + 2*Dwall;
-    d9 = ceil(Htile*Npillars) + 2*Dwall;
+    d = ceil(tiles) + ceil(2*wall);
+    d9 = ceil(Htile*Npillars) + ceil(2*wall);
+    echo(tiles=tiles, d=d, d9=d9);
     w = Vtile.y + 2*Rext;
     h = Vtile.x + Hfloor + Hlip;
-    vbox = [w, d, h];
-    vbox9 = [w, d9, h];
-    well = vbox - [2*thick, 2*thin, 0];
-    ot = [0, vbox.y/2 - d9/2];
-    box(vbox, well=well, draw=tround(Vtile.x/3), tabs=-d9, slots=-d9, color=color);
+    v = [w, d, h];
+    well = [w-2*side, d-2*wall, h-Hfloor+Dcut];
+    otop = [0, d/2 - d9/2];
+    colorize(color) difference() {
+        box(v, grid=0, draw=true, notch=tround(Vtile.x/3), stack=true);
+        raise(Hfloor) prism(well, r=Rext-wall);
+    }
     // children
     if ($children) raise() children(0);
-    if (1<$children) translate(ot) raise(vbox.z+EPSILON) children([1:$children-1]);
+    if (1<$children) translate(otop) raise(h-Hstack+EPSILON)
+        children([1:$children-1]);
 }
 module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
                   wall=Dwall, divider=Dwall, lip=Htoken/3, color=undef) {
@@ -155,9 +152,9 @@ module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
 module hex_base(base=Dthin, wall=Dthin, snug=0.05, color=undef) {
     h = lfloor(Hboard) + base;
     colorize(color) difference() {
-        prism(height=h, r=wall) hex(r=Rhex+wall);
-        raise(base) prism(height=h) hex(r=Rhex-snug);
-        raise(-Dcut) prism(height=base+2*Dcut) hex(r=Rhex-Rext);
+        prism(height=h) hex(rhex=Rhex+wall, r=wall);
+        raise(base) prism(height=h) hex(rhex=Rhex-snug);
+        punch(base) hex(rhex=Rhex-Rext);
     }
 }
 module hex_caddy(color=undef) {
@@ -213,7 +210,7 @@ module hex_caddy(color=undef) {
             }
             // town riser
             prism(height=ztown+Djoiner) intersection() {
-                translate([xtown, 0]) hex(r=rtown+wall);
+                translate([xtown, 0]) hex(rhex=rtown+wall);
                 square([vgrip.x - 2*rext, vgrip.y], center=true);
                 // don't cross the midpoint
                 wint = xint + vgrip.x/2;
@@ -226,9 +223,9 @@ module hex_caddy(color=undef) {
         %raise() {
             for (i=[-1,+1]) {
                 translate([xtown, dy*i, ztown]) hex_tile(height=6*htown);
-                translate([xcity, dy*i]) hex_tile(height=5*hcity, r=rcity);
+                translate([xcity, dy*i]) hex_tile(height=5*hcity, rhex=rcity);
             }
-            translate([xint, 0]) hex_tile(height=5*hcity, r=rcity);
+            translate([xint, 0]) hex_tile(height=5*hcity, rhex=rcity);
         }
     }
 }
@@ -241,10 +238,8 @@ module player_tray(color=undef) {
     vbase = volume(Vtray_hex, v.z - Vtray_hex.z);
     dbase = vbase.z - 1;
     translate([0, v.y/2 - Vtray_hex.y/2]) {
-        box(vbase, grid=[1, 2], depth=dbase, tabs=true, scoop=true, color=color) {
-            union();
+        box(vbase, grid=[1, 2], depth=dbase, tabs=true, scoop=true, color=color)
             children();
-        }
     }
     wunits = eround(2*Vunit.x + 2*wall + ddiv + 4, 0.5);
     vunits = [wunits, v.y - vbase.y + wall - Djoiner, v.z];
