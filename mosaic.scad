@@ -152,7 +152,7 @@ module token_rack(n=undef, height=Hmain, last=undef, r=Rext,
 module hex_base(base=Dthin, wall=Dthin, snug=0.05, color=undef) {
     h = lfloor(Hboard) + base;
     colorize(color) difference() {
-        prism(height=h, r=wall) hex(rhex=Rhex+wall);
+        prism(height=h) hex(rhex=Rhex+wall, r=wall);
         raise(base) prism(height=h) hex(rhex=Rhex-snug);
         punch(base) hex(rhex=Rhex-Rext);
     }
