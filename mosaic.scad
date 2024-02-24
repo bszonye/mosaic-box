@@ -210,7 +210,7 @@ module hex_caddy(color=undef) {
             }
             // town riser
             prism(height=ztown+Djoiner) intersection() {
-                translate([xtown, 0]) hex(r=rtown+wall);
+                translate([xtown, 0]) hex(rhex=rtown+wall);
                 square([vgrip.x - 2*rext, vgrip.y], center=true);
                 // don't cross the midpoint
                 wint = xint + vgrip.x/2;
@@ -223,9 +223,9 @@ module hex_caddy(color=undef) {
         %raise() {
             for (i=[-1,+1]) {
                 translate([xtown, dy*i, ztown]) hex_tile(height=6*htown);
-                translate([xcity, dy*i]) hex_tile(height=5*hcity, r=rcity);
+                translate([xcity, dy*i]) hex_tile(height=5*hcity, rhex=rcity);
             }
-            translate([xint, 0]) hex_tile(height=5*hcity, r=rcity);
+            translate([xint, 0]) hex_tile(height=5*hcity, rhex=rcity);
         }
     }
 }
